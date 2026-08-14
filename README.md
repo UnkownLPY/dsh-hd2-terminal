@@ -19,19 +19,6 @@
 
 前提：一台已部署 DeepSeek Harness 的机器。
 
-### 方式 A：npm 包
-
-```bash
-# 在 DSH 部署的 node_modules 所在目录执行
-npm install dsh-hd2-terminal
-```
-
-### 方式 B：目录复制
-
-```bash
-cp -r dsh-hd2-terminal <部署>/node_modules/dsh-hd2-terminal
-```
-
 ### 方式 A：一键安装脚本（推荐）
 
 ```bash
