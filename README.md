@@ -32,7 +32,29 @@ npm install dsh-hd2-terminal
 cp -r dsh-hd2-terminal <部署>/node_modules/dsh-hd2-terminal
 ```
 
-### 注册插件行
+### 方式 A：一键安装脚本（推荐）
+
+```bash
+./install.sh                          # 自动探测部署位置
+./install.sh --deploy <node_modules>  # 或手动指定部署 node_modules 绝对路径
+```
+
+脚本自动完成三件事：定位部署 `node_modules` → 复制插件包 → 在 `~/.dsh/profiles/web/cordis.patch.yml` 幂等注册插件行（重复执行安全）。
+
+### 方式 B：npm 包
+
+```bash
+# 在 DSH 部署的 node_modules 所在目录执行
+npm install dsh-hd2-terminal
+```
+
+### 方式 C：目录复制
+
+```bash
+cp -r dsh-hd2-terminal <部署>/node_modules/dsh-hd2-terminal
+```
+
+### 注册插件行（方式 B/C 需要手动执行）
 
 在你的 profile 的 `cordis.patch.yml` 中添加：
 
@@ -44,7 +66,34 @@ cp -r dsh-hd2-terminal <部署>/node_modules/dsh-hd2-terminal
 
 （web profile 位于 `~/.dsh/profiles/web/cordis.patch.yml`。）
 
-重启 DSH 进程后生效；在「设置 → 常规」中可随时开关主题。
+**重启 DSH 进程后生效**；在「设置 → 常规 → 超级地球终端」中可随时开关主题（开关持久化、切换即时生效）。
+
+## 发布到 GitHub
+
+```bash
+cd dsh-hd2-terminal
+git init
+git add .
+git commit -m "dsh-hd2-terminal: Helldivers 2 Democracy Tactical Terminal fan theme"
+git branch -M main
+
+# 若已安装并登录 GitHub CLI（推荐）：
+gh repo create dsh-hd2-terminal --public --source=. --push
+
+# 或手动：在 github.com 新建仓库后：
+git remote add origin https://github.com/<你的用户名>/dsh-hd2-terminal.git
+git push -u origin main
+```
+
+发布后，其他人的安装方式：
+
+```bash
+git clone https://github.com/<你的用户名>/dsh-hd2-terminal.git
+cd dsh-hd2-terminal
+./install.sh
+```
+
+（可选）发布 npm：`npm publish` 后可按方式 B 安装。
 
 ## 素材来源与版权
 
