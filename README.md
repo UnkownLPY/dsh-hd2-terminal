@@ -8,7 +8,7 @@
 - **字体**：Black Ops One（军事模板标题）、Chakra Petch（界面）、Share Tech Mono（终端读数），经 Google Fonts 加载
 - **终端框架**：顶部指挥条（超级地球鹰徽 + 宣传语轮播 + SEST 时钟 + UPLINK 状态）、底部宣传跑马灯、四角黄框、扫描线
 - **SEST 时钟**：超级地球标准时（GMT+2），年份 = 真实年份 + 160（2026 → 2186），昼夜图标
-- **输入区**：UPLINK 战术读条与统计信息融合（轮数/步数/LLM/工具时长/首 token/速率/缓存/出入 token）
+- **输入区**：UPLINK 战术读条与统计信息融合（轮数/步数/LLM/工具时长/首 token/速率/缓存/出入 token），遮蔽内置统计行
 - **侧栏**：工作区标题行 companion titlebox 斜纹样式、会话/工作区行为新会话式黄底切角按钮、弹出菜单 45° 切角 + 黄色线框
 - **图标**：helldivers.wiki.gg 官方战役图标（侦察/解放/紧急解放战役 + 增援战略）
 - **公民简报面板**：潜兵徽记 + 战况读数（顶栏 ⓘ 或侧栏 ★ SUPER EARTH 打开）
@@ -22,28 +22,23 @@
 ### 方式 A：一键安装脚本（推荐）
 
 ```bash
-./install.sh                          # 自动探测部署位置
-./install.sh --deploy <node_modules>  # 或手动指定部署 node_modules 绝对路径
+git clone https://github.com/UnkownLPY/dsh-hd2-terminal.git
+cd dsh-hd2-terminal
+./install.sh                          # 安装到 web profile（默认）
+./install.sh --profile <name>         # 安装到其他 profile
+./install.sh --deploy <node_modules>  # 或手动指定 node_modules 绝对路径
 ```
 
-脚本自动完成三件事：定位部署 `node_modules` → 复制插件包 → 在 `~/.dsh/profiles/web/cordis.patch.yml` 幂等注册插件行（重复执行安全）。
+脚本自动完成三件事：把插件包复制到 profile 的 `node_modules`（`$DSH_HOME/profiles/<profile>/node_modules/`）→ 在 profile 的 `cordis.patch.yml` 幂等注册插件行（重复执行安全）。
 
-### 方式 B：npm 包（无效，因为我没有发布到npm上）
+### 方式 B：目录复制
 
 ```bash
-# 在 DSH 部署的 node_modules 所在目录执行
-npm install dsh-hd2-terminal
+git clone https://github.com/UnkownLPY/dsh-hd2-terminal.git
+cp -R dsh-hd2-terminal "$DSH_HOME/profiles/web/node_modules/dsh-hd2-terminal"
 ```
 
-### 方式 C：目录复制
-
-```bash
-cp -r dsh-hd2-terminal <部署>/node_modules/dsh-hd2-terminal
-```
-
-### 注册插件行（方式 B/C 需要手动执行）
-
-在你的 profile 的 `cordis.patch.yml` 中添加：
+然后在 `$DSH_HOME/profiles/web/cordis.patch.yml` 中注册插件行：
 
 ```yaml
 - insert:
@@ -51,9 +46,46 @@ cp -r dsh-hd2-terminal <部署>/node_modules/dsh-hd2-terminal
       name: dsh-hd2-terminal
 ```
 
-（web profile 位于 `~/.dsh/profiles/web/cordis.patch.yml`。）
+（方式 A 会替你完成这一步；`$DSH_HOME` 未设置时默认 `~/.dsh`。）
 
-**重启 DSH 进程后生效**；在「设置 → 常规 → 超级地球终端」中可随时开关主题（开关持久化、切换即时生效）。
+### 方式 C：npm 包（发布 npm 后可用）
+
+```bash
+npm install dsh-hd2-terminal
+```
+
+安装后仍需按方式 B 注册插件行。
+
+**生效方式**：DSH 正在运行的话，保存 patch 后直接刷新 Web 页面即可（patch 层热重载）；未启动则正常启动。主题开关位于「设置 → 常规 → 超级地球终端」。
+
+## 验证与故障排查
+
+安装完成后：
+
+- 页面应出现超级地球黄主题与终端框架（顶栏鹰徽、SEST 时钟、宣传跑马灯、四角黄框、扫描线）；
+- 输入区显示 UPLINK 统计条（遮蔽内置 token 统计行）；
+- 「设置 → 常规 → 超级地球终端」可随时开关主题，切换即时生效且持久化。
+
+若主题没有出现：
+
+1. 确认 `cordis.patch.yml` 里保留着本插件的 insert 行（`- id: hd2-terminal` / `name: dsh-hd2-terminal`），且没有被其他内容替换；
+2. 确认 `lib/client.js` 与仓库一致——客户端半边是预构建的浏览器 bundle（`window.__ModuleLoader__.load` 格式），请勿手动修改；
+3. 重启 DSH 进程后刷新页面。
+
+注意：`cordis.patch.yml` 只接受 loader 补丁条目（insert / 配置覆盖 / disable）。不要在组合行上添加插件代码内部的字段——例如 slot 注册优先级（`priority`）属于插件 bundle 内部实现，出现在组合配置里没有意义。
+
+## 发布到 GitHub / npm
+
+```bash
+git init
+git add .
+git commit -m "dsh-hd2-terminal: Helldivers 2 Democracy Tactical Terminal fan theme"
+git branch -M main
+git remote add origin https://github.com/<你的用户名>/dsh-hd2-terminal.git
+git push -u origin main
+```
+
+（可选）发布 npm：`npm publish` 后可按方式 C 安装。
 
 ## 素材来源与版权
 

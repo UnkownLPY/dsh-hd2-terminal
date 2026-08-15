@@ -2,35 +2,34 @@
 set -euo pipefail
 
 # dsh-hd2-terminal 一键安装脚本
-# 自动完成：定位部署 node_modules → 复制插件包 → 在 web profile 的 patch 层注册插件行
+# 自动完成三件事：定位 profile 的 node_modules → 复制插件包 → 在 profile 的
+# cordis.patch.yml 幂等注册插件行（重复执行安全）。
+#
 # 用法:
-#   ./install.sh                          # 自动探测部署
-#   ./install.sh --deploy <node_modules>  # 手动指定部署 node_modules 绝对路径
+#   ./install.sh                          # 安装到 web profile（默认）
+#   ./install.sh --profile <name>         # 安装到其他 profile
+#   ./install.sh --deploy <node_modules>  # 手动指定 node_modules 绝对路径
 
 PKG_NAME="dsh-hd2-terminal"
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
+DSH_HOME_DIR="${DSH_HOME:-$HOME/.dsh}"
+PROFILE="web"
 DEPLOY_NM=""
-if [[ "${1:-}" == "--deploy" ]]; then
-  DEPLOY_NM="$2"
-  shift 2 || true
-fi
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --profile) PROFILE="$2"; shift 2 ;;
+    --deploy) DEPLOY_NM="$2"; shift 2 ;;
+    *) echo "未知参数: $1" >&2; exit 1 ;;
+  esac
+done
 
 if [[ -z "$DEPLOY_NM" ]]; then
-  for d in "$HOME"/.npm/_npx/*/node_modules; do
-    if [[ -d "$d/@deepseek-ai/dsh-web-app" ]]; then
-      DEPLOY_NM="$d"
-      break
-    fi
-  done
+  # 出树插件的位置：profile 自己的 node_modules（Node 从 profile 目录
+  # 向上查找时最先命中；无需 pnpm，普通目录拷贝即可解析）。
+  DEPLOY_NM="$DSH_HOME_DIR/profiles/$PROFILE/node_modules"
 fi
-
-if [[ -z "$DEPLOY_NM" || ! -d "$DEPLOY_NM" ]]; then
-  echo "✗ 未找到 DSH 部署 node_modules。" >&2
-  echo "  请手动指定: ./install.sh --deploy <node_modules绝对路径>" >&2
-  exit 1
-fi
-echo "✓ 部署 node_modules: $DEPLOY_NM"
+mkdir -p "$DEPLOY_NM"
 
 TARGET="$DEPLOY_NM/$PKG_NAME"
 rm -rf "$TARGET"
@@ -38,11 +37,10 @@ cp -R "$HERE" "$TARGET"
 rm -rf "$TARGET/.git"
 echo "✓ 插件包已安装: $TARGET"
 
-PROFILE_DIR="${DSH_HOME:-$HOME/.dsh}/profiles/web"
-PATCH="$PROFILE_DIR/cordis.patch.yml"
-mkdir -p "$PROFILE_DIR"
+PATCH="$DSH_HOME_DIR/profiles/$PROFILE/cordis.patch.yml"
+mkdir -p "$(dirname "$PATCH")"
 
-if [[ -f "$PATCH" ]] && grep -q "$PKG_NAME" "$PATCH"; then
+if [[ -f "$PATCH" ]] && grep -q "id: hd2-terminal" "$PATCH"; then
   echo "✓ 插件行已存在: $PATCH"
 else
   # 移除空数组占位（若存在），再追加 insert 条目
@@ -60,6 +58,8 @@ else
 fi
 
 echo
-echo "完成！重启 DSH 进程后生效。"
+echo "完成！"
+echo "  · DSH 正在运行：直接刷新 Web 页面即可（patch 层热重载）。"
+echo "  · DSH 未启动：正常启动后即生效。"
 echo "主题开关位于: 设置 → 常规 → 超级地球终端"
-echo "如需卸载: 删除 $PATCH 中的 hd2-terminal 行并移除 $TARGET 目录，重启即可。"
+echo "如需卸载: 删除 $PATCH 中的 hd2-terminal 行并移除 $TARGET 目录。"

@@ -1,10 +1,14 @@
 {
   "name": "dsh-hd2-terminal",
   "description": "Helldivers 2 'Democracy Tactical Terminal' fan theme for DeepSeek Harness: Super Earth yellow palette, stencil/mono fonts, terminal chrome (SEST clock, propaganda ticker, UPLINK stats), wiki.gg campaign icons, citizen briefing panel, and a settings toggle.",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "license": "MIT",
   "type": "module",
   "main": "lib/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/UnkownLPY/dsh-hd2-terminal.git"
+  },
   "exports": {
     ".": "./lib/index.js",
     "./client": "./lib/client.js",
@@ -23,6 +27,7 @@
   },
   "dsh": {
     "client": {
+      "platform": "web",
       "inject": [
         "@deepseek-ai/dsh-client-connection",
         "@deepseek-ai/dsh-client-runtime",
