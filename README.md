@@ -76,6 +76,8 @@ npm install dsh-hd2-terminal
 
 注意：`cordis.patch.yml` 只接受 loader 补丁条目（insert / 配置覆盖 / disable）。不要在组合行上添加插件代码内部的字段——例如 slot 注册优先级（`priority`）属于插件 bundle 内部实现，出现在组合配置里没有意义。
 
+主题开关与语言偏好的持久化走插件自有的私有设置通道（宿主注册的 `/hd2-terminal/settings` 路由 + DSH 的 `settings.yaml`），不依赖 DSH `/api` 配置面的命名空间白名单——出树插件在 `/api` 上默认不可读不可写，这是平台设计而非故障。
+
 ## 发布到 GitHub / npm
 
 ```bash
