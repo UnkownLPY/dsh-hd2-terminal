@@ -34,7 +34,7 @@ mkdir -p "$DEPLOY_NM"
 TARGET="$DEPLOY_NM/$PKG_NAME"
 rm -rf "$TARGET"
 cp -R "$HERE" "$TARGET"
-rm -rf "$TARGET/.git"
+rm -rf "$TARGET/.git" "$TARGET/screenshots"
 echo "✓ 插件包已安装: $TARGET"
 
 PATCH="$DSH_HOME_DIR/profiles/$PROFILE/cordis.patch.yml"

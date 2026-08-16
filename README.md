@@ -17,6 +17,16 @@
 - **双语界面**：中文（官方术语：管理式民主、真理部、终结族…）/ English 双语文案，主题内一键切换、即时生效（默认中文）
 - **设置开关**：设置 → 常规 → 「超级地球终端」开启/关闭 + 「主题语言」中文/English 切换（持久化，切换即时生效）
 
+## 预览
+
+| 中文 · 浅色 | 中文 · 深色（公民简报） |
+|---|---|
+| [![中文浅色主题](screenshots/CN.jpg)](screenshots/CN.jpg) | [![中文深色主题](screenshots/CN-brief-dark.jpg)](screenshots/CN-brief-dark.jpg) |
+
+| English · 浅色 | English · 深色（Citizen briefing） |
+|---|---|
+| [![English light theme](screenshots/EN.jpg)](screenshots/EN.jpg) | [![English dark theme](screenshots/EN-brief-dark.jpg)](screenshots/EN-brief-dark.jpg) |
+
 ## 安装
 
 前提：一台已部署 DeepSeek Harness 的机器。
